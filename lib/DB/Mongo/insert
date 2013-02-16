@@ -1,13 +1,11 @@
 #!/bin/bash
 
-synopsis="${0##*/} [-h] [--test] [--db DB] [--coll COLL] -|NAME:VALUE[ ...]"
+synopsis="${0##*/} [-h] [--test] -|NAME:VALUE[ ...]"
 
 error() { printf "%s\n" "$@" >&2; exit 1; }
 
 while test "${1:0:1}" = -; do
     case $1 in
-    --db)   db=$1; shift;;
-    --coll) coll=$1; shift;;
     -h)     printf "SYNOPSIS: %s\n" "$synopsis"; exit;;
     --test) TESTING=1;;
     *)      error "UNKNOWN OPTION: $1";;
@@ -24,6 +22,8 @@ db=$value
 
 resolve_attr COLL || error "no collection attribute COLL found"
 coll=$value
+
+echo "$0 still only a stub, does nothing with args <$*>"
 
 exit 0
 NAME
