@@ -1,6 +1,66 @@
 #!/bin/bash
 
+synopsis="${0##*/} [-h] [--test] [--db DB] [--coll COLL] -|NAME:VALUE[ ...]"
+
+error() { printf "%s\n" "$@" >&2; exit 1; }
+
+while test "${1:0:1}" = -; do
+    case $1 in
+    --db)   db=$1; shift;;
+    --coll) coll=$1; shift;;
+    -h)     printf "SYNOPSIS: %s\n" "$synopsis"; exit;;
+    --test) TESTING=1;;
+    *)      error "UNKNOWN OPTION: $1";;
+    esac
+    shift
+done
+
 # db.products.insert( { item: "box", qty: 20 } )
 
-mongo --quiet --eval 'db.products.insert( { item: "box2", qty: "20" } )'
+# mongo --quiet --eval 'db.products.insert( { item: "box2", qty: "20" } )'
+
+resolve_attr DB || error "no database attribute DB found"
+db=$value
+
+resolve_attr COLL || error "no collection attribute COLL found"
+coll=$value
+
+exit 0
+NAME
+    DB/Mongo.insert -- wrap mongo shell's insert command
+
+SYNOPSIS
+    insert [-h|--help|--test] -
+    insert [-h|--help|--test] NAME:VALUE[ ...]
+
+OPTIONS
+    -h          -- show synopsis
+    --help      -- show this manpage
+    --test      -- suppress commiting data, show actions (uses variable TESTING)
+
+DESCRIPTION
+    Thinobject wrapper for mongodb's mongo(1) shell insert command.  The
+    intent is to provide a command-line interface to mongodb operations.
+
+    The document to be inserted is given on the command line or read
+    from STDIN.  In the simplest case, the document will consist of
+    <NAME:VALUE> pairs, but VALUE might be either a scalar (number or
+    string) or a structure such as [] or {} containing a list or hash
+    of elements.
+
+    The mechanism is to construct a script argument for the mongo(1) --eval 
+    option, also passing options --norc and --quiet.
+
+    Alternatively, it may make more sense to resolve the db and collection
+    values internally, requiring them to be defined as symvars in the application
+    object or in its search paths.  If so, the synopsis would be one of:
+
+        insert [-h|--help|--test] -
+        insert [-h|--help|--test] NAME:VALUE ...
+
+BUGS
+    This work is experimental and may change in interface or implementation.
+    
+AUTHOR
+    Ken.Irving@alaska.edu, 2013
 
